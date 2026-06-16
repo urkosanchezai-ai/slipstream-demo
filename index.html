@@ -59,14 +59,7 @@
         <h2>Servicios de alto rendimiento</h2>
         <p>Desde un Stage 1 de calle hasta un swap completo de competición. Cada proyecto, documentado y garantizado.</p>
       </div>
-      <div class="cases-grid">
-        <div class="case reveal"><div class="ic">🔧</div><h3>Preparación de motor</h3><p>Builds completos por fases: admisión, turbo, internos forjados y puesta a punto en bancada.</p><span class="tag">Stage 1·2·3</span></div>
-        <div class="case reveal"><div class="ic">💻</div><h3>Electrónica a medida</h3><p>Cableados, centralitas programables y standalone (Haltech, MoTeC, Link) para cualquier proyecto.</p><span class="tag">ECU · Standalone</span></div>
-        <div class="case reveal"><div class="ic">🧠</div><h3>Reprogramaciones</h3><p>Mapas a medida en banco de potencia. Más potencia, mejor respuesta y total fiabilidad.</p><span class="tag">Dyno · Custom maps</span></div>
-        <div class="case reveal"><div class="ic">🔩</div><h3>Fabricación de escapes</h3><p>Líneas completas a medida en inox 304 y titanio. Sonido, flujo y acabado de competición.</p><span class="tag">Inox · Titanio</span></div>
-        <div class="case reveal"><div class="ic">📋</div><h3>Homologaciones</h3><p>Legalizamos tus reformas y te lo dejamos listo para pasar la ITV sin sorpresas.</p><span class="tag">Reformas · ITV</span></div>
-        <div class="case reveal"><div class="ic">🏎️</div><h3>Swaps y competición</h3><p>Proyectos integrales: swap de motor, jaulas, preparación para Time Attack y drift.</p><span class="tag">Swap · Track</span></div>
-      </div>
+      <div class="cases-grid" id="cfg-services"></div>
     </div>
   </section>
 
@@ -96,15 +89,10 @@
   <section class="section">
     <div class="container">
       <div class="sec-head reveal">
-        <span class="eyebrow">Por qué RaceLab</span>
+        <span class="eyebrow" id="cfg-why-eyebrow">Por qué RaceLab</span>
         <h2>Ingeniería, no improvisación</h2>
       </div>
-      <div class="benefits-grid">
-        <div class="benefit reveal"><div class="ic">🏆</div><div><h3>Especialistas reales</h3><p>12 años centrados exclusivamente en performance. No somos un taller generalista.</p></div></div>
-        <div class="benefit reveal"><div class="ic">📊</div><div><h3>Banco de potencia propio</h3><p>Cada preparación se valida en dyno. Números reales, no promesas.</p></div></div>
-        <div class="benefit reveal"><div class="ic">🛡️</div><div><h3>Trabajo garantizado</h3><p>Componentes de primeras marcas y garantía por escrito en cada proyecto.</p></div></div>
-        <div class="benefit reveal"><div class="ic">💬</div><div><h3>Seguimiento constante</h3><p>Te mantenemos informado del avance de tu coche en cada fase.</p></div></div>
-      </div>
+      <div class="benefits-grid" id="cfg-why"></div>
     </div>
   </section>
 
@@ -116,11 +104,7 @@
         <h2>Proyectos recientes</h2>
         <p>Una muestra de lo que sale de nuestros boxes.</p>
       </div>
-      <div class="cases-grid">
-        <div class="case reveal"><div class="ic">🟥</div><h3>Honda Civic Type R FK8</h3><p>Stage 2 + admisión + downpipe. 360 cv fiables para calle y track.</p><span class="tag">+92 cv</span></div>
-        <div class="case reveal"><div class="ic">⬛</div><h3>Nissan 350Z · Time Attack</h3><p>Swap completo 2JZ-GTE, electrónica standalone y jaula homologada.</p><span class="tag">Swap 2JZ</span></div>
-        <div class="case reveal"><div class="ic">⬜</div><h3>BMW M2 G87</h3><p>Escape valvulado a medida en inox 304, homologable y con sonido brutal.</p><span class="tag">Escape custom</span></div>
-      </div>
+      <div class="cases-grid" id="cfg-projects"></div>
     </div>
   </section>
 
@@ -184,8 +168,8 @@
         </div>
       </div>
       <div class="footer-bot">
-        <span>© 2026 RaceLab Performance. Pol. Ind. Motor, nave 14.</span>
-        <span>Sistema de captación by <strong style="color:var(--c-red)">Slipstream</strong> · <a href="app.html" style="color:var(--c-text-dim)">Acceso taller</a></span>
+        <span id="cfg-footer-bottom">© 2026 RaceLab Performance. Pol. Ind. Motor, nave 14.</span>
+        <span id="cfg-footer-note">Sistema de captación by <strong style="color:var(--c-red)">Slipstream</strong> · <a href="app.html" style="color:var(--c-text-dim)">Acceso taller</a></span>
       </div>
     </div>
   </footer>
@@ -194,7 +178,7 @@
   <div class="auto-overlay" id="auto-overlay">
     <div class="auto-card">
       <h3>¡Solicitud enviada! ✅</h3>
-      <p>Gracias por confiar en RaceLab. Hemos recibido los datos de tu proyecto y te contactaremos en menos de 24 horas.</p>
+      <p id="cfg-confirm-text">Gracias por confiar en RaceLab. Hemos recibido los datos de tu proyecto y te contactaremos en menos de 24 horas.</p>
       <div class="auto-steps">
         <div class="auto-step" data-step="0"><div class="si">📝</div><div><div class="st">Solicitud recibida</div><div class="sd">Tus datos están a salvo</div></div><span class="check">✓</span></div>
         <div class="auto-step" data-step="1"><div class="si">🗂️</div><div><div class="st">Registrada en el taller</div><div class="sd">Ya estás en nuestra cola de proyectos</div></div><span class="check">✓</span></div>
@@ -208,6 +192,8 @@
 
   <div class="toast-wrap" id="toast-wrap"></div>
 
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/brand.js"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/landing.js"></script>
 </body>
