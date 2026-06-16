@@ -227,7 +227,9 @@
     if (!name) return;
     const vehicle = prompt('Vehículo:') || '—';
     const service = prompt('Servicio (Preparación, Electrónica, Homologación, Escape, Reprogramación, Swap):') || 'Consulta';
-    const lead = S.add({ name, vehicle, service, source: 'Manual', detail: 'Lead añadido manualmente desde el CRM.' });
+    const valueRaw = prompt('Valor estimado (€), deja vacío si no lo sabes:') || '0';
+    const value = parseInt(valueRaw.replace(/\D/g, ''), 10) || 0;
+    const lead = S.add({ name, vehicle, service, value, source: 'Manual', detail: 'Lead añadido manualmente desde el CRM.' });
     toast({ icon: '➕', title: 'Lead creado', text: `${name} añadido a "Nuevo Lead".` });
     showView('pipeline');
     setTimeout(() => { const c = $(`.card[data-id="${lead.id}"]`); if (c) c.classList.add('new-pop'); }, 50);
