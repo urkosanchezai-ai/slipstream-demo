@@ -5,6 +5,10 @@
    ============================================ */
 
 window.SITE_CONFIG = {
+  // --- n8n (dejar vacío = modo demo local con localStorage) ---
+  webhookUrl: '',   // URL POST del webhook de n8n (landing → n8n → Sheets)
+  leadsApiUrl: '',  // URL GET del webhook de n8n (CRM ← n8n ← Sheets)
+
   // --- Identidad ---
   brandPrefix: 'RACE',      // primera parte del logo (color blanco)
   brandSuffix: 'LAB',       // segunda parte del logo (color acento)

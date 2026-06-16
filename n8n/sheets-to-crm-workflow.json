@@ -1,0 +1,85 @@
+{
+  "name": "Slipstream · Leer Sheets → CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "slipstream-leads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "a001b002-c003-d004-e005-f00600000001",
+      "name": "Webhook GET · Solicitud del CRM"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "documentId": {
+          "__rl": true,
+          "value": "1Duyvpnz4ca4VMfDYSxUZc4S53GB9hDkWukTgwz6S99I",
+          "mode": "list",
+          "cachedResultName": "CRM Talleres"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [280, 0],
+      "id": "a001b002-c003-d004-e005-f00600000002",
+      "name": "Leer leads de Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "MZk2gjYqJYzuA3KG",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recoger todas las filas y devolverlas como array JSON limpio\nconst rows = $input.all().map(item => item.json);\nreturn [{ json: { leads: rows } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 0],
+      "id": "a001b002-c003-d004-e005-f00600000003",
+      "name": "Empaquetar como array"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.leads }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [840, 0],
+      "id": "a001b002-c003-d004-e005-f00600000004",
+      "name": "Responder al CRM"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook GET · Solicitud del CRM": { "main": [[{ "node": "Leer leads de Sheets", "type": "main", "index": 0 }]] },
+    "Leer leads de Sheets": { "main": [[{ "node": "Empaquetar como array", "type": "main", "index": 0 }]] },
+    "Empaquetar como array": { "main": [[{ "node": "Responder al CRM", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false },
+  "id": "CRM_READ_WORKFLOW_001",
+  "tags": []
+}

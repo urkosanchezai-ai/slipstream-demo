@@ -264,8 +264,12 @@
   });
 
   /* ---------- Init ---------- */
-  S.all(); // siembra
-  showView('dashboard');
+  if (window.SITE_CONFIG?.leadsApiUrl) {
+    S.syncFromSheets(() => showView('dashboard'));
+  } else {
+    S.all(); // siembra con datos demo
+    showView('dashboard');
+  }
 
   // Si venimos de la landing con un lead recién creado, avisamos.
   const last = S.all()[0];

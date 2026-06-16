@@ -73,22 +73,38 @@
   }
 
   if (form) {
-    form.addEventListener('submit', (ev) => {
+    form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
       const fd = new FormData(form);
-      const lead = window.Slipstream.add({
-        name: fd.get('name') || 'Cliente demo',
-        phone: fd.get('phone') || '—',
-        shop: fd.get('shop') || '',
+      const payload = {
+        name:    fd.get('name')    || 'Cliente demo',
+        phone:   fd.get('phone')   || '—',
+        shop:    fd.get('shop')    || '',
         vehicle: fd.get('vehicle') || '—',
         service: fd.get('service') || 'Consulta',
-        detail: fd.get('message') || 'Solicitud de información desde la web.',
-        value: 0,
-        source: 'Web',
-      });
+        detail:  fd.get('message') || 'Solicitud de información desde la web.',
+        source:  'Web',
+      };
+
+      // Guardar en localStorage siempre (CRM demo local)
+      window.Slipstream.add({ ...payload, value: 0 });
+
+      // Si hay webhook configurado, enviar también a n8n (modo real)
+      const url = window.SITE_CONFIG?.webhookUrl;
+      if (url) {
+        try {
+          await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        } catch (e) {
+          console.warn('[Slipstream] Webhook no disponible, datos guardados solo en local.', e);
+        }
+      }
+
       form.reset();
       runAutomation();
-      console.log('[Slipstream] Lead creado:', lead);
     });
   }
 

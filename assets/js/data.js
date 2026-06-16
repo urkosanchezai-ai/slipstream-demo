@@ -91,6 +91,41 @@ window.Slipstream = (function () {
 
   function all() { return load(); }
 
+  // Sincroniza el CRM con Google Sheets vía n8n.
+  // Llama a esto desde crm.js al iniciar si hay leadsApiUrl configurada.
+  async function syncFromSheets(onDone) {
+    const url = window.SITE_CONFIG?.leadsApiUrl;
+    if (!url) { onDone && onDone(load()); return; }
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rows = await res.json();
+      // Normalizar columnas de Sheets al formato interno del CRM
+      const leads = rows.map((r, i) => ({
+        id:          r.id || ('sheet_' + i),
+        name:        r.Nombre || r.nombre || '—',
+        phone:       r.WhatsApp || r.telefono || '—',
+        vehicle:     r.Vehiculo || r.vehiculo || '—',
+        service:     r['Servicio solicitado'] || r.servicio || 'Consulta',
+        detail:      r.Comentarios || r.mensaje || '',
+        shop:        r.Taller || r.taller || '',
+        source:      r.Origen || r.origen || 'Web',
+        date:        r.Fecha || r.fecha || new Date().toISOString().slice(0, 10),
+        stage:       (r.Estado || r.estado || 'new').toLowerCase() === 'nuevo' ? 'new' : (r.Estado || r.estado || 'new').toLowerCase(),
+        value:       Number(r.Valor || r.valor || 0),
+        priority:    r.Prioridad || r.priority || 'media',
+        temperature: r.Temperatura || r.leadType || null,
+        notes:       [],
+      }));
+      withTemperature(leads);
+      save(leads);
+      onDone && onDone(leads);
+    } catch (e) {
+      console.warn('[Slipstream] No se pudo leer de Sheets, usando datos locales.', e);
+      onDone && onDone(load());
+    }
+  }
+
   function add(lead) {
     const leads = load();
     const now = new Date();
@@ -118,5 +153,5 @@ window.Slipstream = (function () {
 
   function reset() { localStorage.removeItem(KEY); return load(); }
 
-  return { STAGES, TEMPS, all, add, update, setStage, reset };
+  return { STAGES, TEMPS, all, add, update, setStage, reset, syncFromSheets };
 })();
