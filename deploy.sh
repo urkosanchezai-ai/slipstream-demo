@@ -11,8 +11,8 @@ echo "▸ Comprobando autenticación…"
 USER=$("$GH" api user --jq .login)
 echo "▸ Usuario: $USER"
 
-echo "▸ Creando repo privado '$REPO' y haciendo push…"
-"$GH" repo create "$REPO" --private --source=. --remote=origin --push
+echo "▸ Creando repo público '$REPO' y haciendo push…"
+"$GH" repo create "$REPO" --public --source=. --remote=origin --push
 
 echo "▸ Intentando activar GitHub Pages (rama main, raíz)…"
 if "$GH" api -X POST "repos/$USER/$REPO/pages" -f "source[branch]=main" -f "source[path]=/" >/dev/null 2>&1; then
