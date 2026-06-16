@@ -1,0 +1,121 @@
+{
+  "name": "Slipstream · Captación y clasificación de leads",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $('Clasificar lead1').item.json.clientEmail }}",
+        "subject": "={{ $('Clasificar lead1').item.json.confirmSubject }}",
+        "message": "={{ $('Clasificar lead1').item.json.confirmBody }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1152, 336],
+      "id": "72759f0e-ed44-445e-8e2e-e1ed739fb29e",
+      "name": "Gmail al cliente",
+      "webhookId": "8124c5ac-5359-48fd-aea9-2a9359642942",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wZuKEgpXP2qDbUlS",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "slipstream-lead",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [336, 336],
+      "id": "a1c89d92-9df9-454e-87f9-9724b84a10c8",
+      "name": "Webhook1",
+      "webhookId": "b7fe06bf-9d8e-4935-867f-a5b1c02ae5c2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// ⚙️  CONFIGURACIÓN — solo toca esta sección\n// =====================================================\nconst SHOP_EMAIL  = 'urkosan098@gmail.com'; // email del dueño del taller\nconst SHOP_NAME   = 'RaceLab Performance';\n\n// =====================================================\n// EXTRACCIÓN DE DATOS\n// Compatible con JSON plano (nuestra landing)\n// y con Tally/formularios con data.fields\n// =====================================================\nconst body   = $json.body   || $json        || {};\nconst fields = body?.data?.fields;\n\nconst getField          = (label) => (fields || []).find(f => (f.label || '').toLowerCase().includes(label.toLowerCase()));\nconst getText           = (label) => getField(label)?.value ?? null;\nconst getDropdownText   = (field) => { if (!field?.value?.length) return null; const s = (field.options || []).find(o => o.id === field.value[0]); return s?.text || null; };\nconst getCheckboxValues = (field) => {\n  if (!field) return [];\n  if (Array.isArray(field.value)) return (field.options || []).filter(o => field.value.includes(o.id)).map(o => o.text);\n  if (field.value === true) { const m = (field.label || '').match(/\\((.*?)\\)/); return m ? [m[1]] : []; }\n  return [];\n};\n\nlet nombre, email, telefono, instagram, vehiculo, servicio, mensaje, taller, pais;\n\nif (Array.isArray(fields)) {\n  nombre    = getText('Nombre completo');\n  telefono  = getText('Numero de telefono');\n  instagram = getText('Instagram');\n  vehiculo  = getText('Que coche tienes');\n  pais      = getText('De donde eres');\n  mensaje   = getText('importante');\n  email     = getText('Email') || getText('Correo') || '';\n  servicio  = getCheckboxValues(getField('Que te gustaria hacer')).join(', ');\n  taller    = '';\n} else {\n  nombre    = body.name     || 'Cliente';\n  email     = body.email    || '';\n  telefono  = body.phone    || '';\n  instagram = body.instagram|| '';\n  vehiculo  = body.vehicle  || '—';\n  servicio  = body.service  || 'Consulta';\n  mensaje   = body.detail   || body.message || '';\n  taller    = body.shop     || '';\n  pais      = body.pais     || body.location|| '';\n}\n\n// =====================================================\n// SCORE 0–100\n// =====================================================\nlet score = 0;\n\n// 🔧 SERVICIO (max 35)\nconst hotSvc = ['Swap', 'Electrónica', 'Competición', 'Stage 2'];\nconst midSvc = ['Preparación', 'Escape', 'Reprogramación', 'Stage 1', 'Downpipe'];\nif      (hotSvc.some(s => servicio.includes(s))) score += 35;\nelse if (midSvc.some(s => servicio.includes(s))) score += 20;\nelse                                              score +=  8;\n\n// 📱 TELÉFONO VÁLIDO (max 20)\nconst digits = (telefono || '').replace(/\\D/g, '');\nscore += digits.length >= 9 ? 20 : 5;\n\n// ⏱️ URGENCIA EN EL MENSAJE (max 25)\nconst msg          = (mensaje || '').toLowerCase();\nconst urgentWords  = ['presupuesto', 'precio', 'cuanto', 'cuánto', 'fecha', 'urgente', 'esta semana', 'este mes'];\nscore += urgentWords.some(w => msg.includes(w)) ? 25 : 10;\n\n// 🧠 CLARIDAD / LONGITUD DEL MENSAJE (max 20)\nconst wordCount = msg.split(/\\s+/).filter(Boolean).length;\nif      (wordCount > 15) score += 20;\nelse if (wordCount >=  5) score += 12;\nelse                      score +=  4;\n\nconst finalScore = Math.min(100, Math.round(score));\n\n// =====================================================\n// TEMPERATURA\n// =====================================================\nlet temperatura, prioridad, emoji;\nif (finalScore >= 70) {\n  temperatura = 'CALIENTE';\n  emoji       = '🔥';\n  prioridad   = '🔥 CONTACTAR YA — menos de 2h';\n} else if (finalScore >= 40) {\n  temperatura = 'TEMPLADO';\n  emoji       = '🌤️';\n  prioridad   = '🌤️ CONTACTAR en 24h';\n} else {\n  temperatura = 'FRIO';\n  emoji       = '🧊';\n  prioridad   = '🧊 Seguimiento automático';\n}\n\nconst waLink = finalScore >= 70 && digits ? `https://wa.me/${digits}` : '';\nconst fecha  = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });\n\n// =====================================================\n// EMAIL AL TALLER\n// =====================================================\nconst emailSubject = `${emoji} Lead ${temperatura} · ${nombre} — ${vehiculo}`;\n\nconst emailBody = `\n<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0d0d0d;color:#f0f0f0;border-radius:8px;overflow:hidden\">\n  <div style=\"background:#e10600;padding:20px 28px\">\n    <h1 style=\"margin:0;font-size:1.4rem;color:#fff\">${emoji} NUEVO LEAD ${temperatura}</h1>\n    <p style=\"margin:4px 0 0;color:rgba(255,255,255,0.85);font-size:0.9rem\">${SHOP_NAME} · Sistema de captación Slipstream</p>\n  </div>\n  <div style=\"padding:24px 28px\">\n    <table style=\"width:100%;border-collapse:collapse\">\n      <tr><td style=\"padding:8px 0;color:#999;width:140px\">Nombre</td><td style=\"padding:8px 0;font-weight:bold\">${nombre}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Teléfono</td><td style=\"padding:8px 0\">${telefono}${waLink ? ` · <a href=\"${waLink}\" style=\"color:#e10600\">Abrir WhatsApp</a>` : ''}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Instagram</td><td style=\"padding:8px 0\">${instagram || '—'}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Vehículo</td><td style=\"padding:8px 0\">${vehiculo}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Servicio</td><td style=\"padding:8px 0\">${servicio}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Zona</td><td style=\"padding:8px 0\">${pais || '—'}</td></tr>\n    </table>\n    <div style=\"margin:16px 0;padding:14px;background:#1a1a1a;border-radius:6px;border-left:3px solid #e10600\">\n      <p style=\"margin:0;color:#ccc;font-size:0.9rem\">${mensaje || 'Sin mensaje.'}</p>\n    </div>\n    <table style=\"width:100%;border-collapse:collapse\">\n      <tr><td style=\"padding:8px 0;color:#999\">Score</td><td style=\"padding:8px 0;font-size:1.1rem;font-weight:bold;color:#e10600\">${finalScore}/100</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Temperatura</td><td style=\"padding:8px 0\">${emoji} ${temperatura}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Prioridad</td><td style=\"padding:8px 0\">${prioridad}</td></tr>\n      <tr><td style=\"padding:8px 0;color:#999\">Fecha</td><td style=\"padding:8px 0\">${fecha}</td></tr>\n    </table>\n  </div>\n</div>\n`;\n\n// =====================================================\n// EMAIL DE CONFIRMACIÓN AL CLIENTE\n// =====================================================\nconst confirmSubject = `Recibimos tu solicitud, ${nombre} 🏁`;\nconst confirmBody = `<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#0d0d0d;color:#f0f0f0;border-radius:8px;overflow:hidden\"><div style=\"background:#e10600;padding:20px 28px\"><h1 style=\"margin:0;font-size:1.3rem;color:#fff\">Solicitud recibida ✅</h1><p style=\"margin:4px 0 0;color:rgba(255,255,255,0.85);font-size:0.9rem\">${SHOP_NAME}</p></div><div style=\"padding:24px 28px\"><p>Hola <strong>${nombre}</strong>,</p><p>Hemos recibido tu solicitud para tu <strong>${vehiculo}</strong>. Nuestro equipo la está revisando y te contactaremos en menos de 24 horas.</p><div style=\"margin:20px 0;padding:16px;background:#1a1a1a;border-radius:6px;border-left:3px solid #e10600\"><p style=\"margin:0 0 6px;color:#999;font-size:0.8rem\">RESUMEN DE TU SOLICITUD</p><p style=\"margin:0\"><strong>${vehiculo}</strong> · ${servicio}</p></div><p style=\"color:#999;font-size:0.85rem\">Si tienes alguna duda puedes responder a este email directamente.</p></div></div>`;\n\nreturn [{\n  json: {\n    nombre, email, telefono, instagram, vehiculo, servicio, mensaje, taller, pais,\n    score: finalScore,\n    temperatura,\n    emoji,\n    prioridad,\n    waLink,\n    fecha,\n    estado: 'Nuevo',\n    shopEmail:    SHOP_EMAIL,\n    clientEmail:  'urkosan098@gmail.com',\n    confirmSubject,\n    confirmBody,\n    emailSubject,\n    emailBody,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [624, 336],
+      "id": "c3dfe865-f9f6-4335-99b3-57c962cf42f0",
+      "name": "Clasificar lead1",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Clasificar lead1').item.json.shopEmail }}",
+        "subject": "={{ $('Clasificar lead1').item.json.emailSubject }}",
+        "message": "={{ $('Clasificar lead1').item.json.emailBody }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [848, 336],
+      "id": "b6096961-2cd8-4e4d-bdc6-57c6149c005b",
+      "name": "Gmail al taller1",
+      "webhookId": "4108e75c-f3ce-4640-b6a5-0bf21623088a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "wZuKEgpXP2qDbUlS",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, score: $('Clasificar lead1').item.json.score, temperatura: $('Clasificar lead1').item.json.temperatura }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Access-Control-Allow-Origin", "value": "*" },
+              { "name": "Access-Control-Allow-Headers", "value": "Content-Type" }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1456, 336],
+      "id": "23794deb-9c0f-4cdb-af5d-582c8fb7d4b5",
+      "name": "Responder a la landing1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail al cliente": {
+      "main": [[{ "node": "Responder a la landing1", "type": "main", "index": 0 }]]
+    },
+    "Webhook1": {
+      "main": [[{ "node": "Clasificar lead1", "type": "main", "index": 0 }]]
+    },
+    "Clasificar lead1": {
+      "main": [[{ "node": "Gmail al taller1", "type": "main", "index": 0 }]]
+    },
+    "Gmail al taller1": {
+      "main": [[{ "node": "Gmail al cliente", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "648a49a8ea60df3eb4851bddb5276e6b588ffe7e386e5188321c4145983a6e02"
+  },
+  "id": "v7zUYlBVFcfSlcvu",
+  "tags": []
+}
