@@ -6,7 +6,7 @@
 
 window.SITE_CONFIG = {
   // --- n8n (dejar vacío = modo demo local con localStorage) ---
-  webhookUrl: '',   // URL POST del webhook de n8n (landing → n8n → Sheets)
+  webhookUrl: 'https://urkosancheai-n8n.iwvkxj.easypanel.host/webhook/slipstream-lead',
   leadsApiUrl: '',  // URL GET del webhook de n8n (CRM ← n8n ← Sheets)
 
   // --- Identidad ---
