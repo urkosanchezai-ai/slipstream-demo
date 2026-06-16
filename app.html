@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slipstream CRM · Panel del taller</title>
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/app.css" />
+</head>
+<body class="app">
+
+  <div class="layout">
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+      <a href="index.html" class="brand"><span class="mark"></span>SLIP<span>STREAM</span></a>
+      <nav class="side-nav" id="side-nav">
+        <a data-view="dashboard" class="active"><span class="ic">📊</span> Dashboard</a>
+        <a data-view="pipeline"><span class="ic">🗂️</span> Pipeline</a>
+        <a data-view="clientes"><span class="ic">👥</span> Clientes</a>
+        <a data-view="automatizacion"><span class="ic">⚡</span> Automatización</a>
+      </nav>
+      <div class="side-foot">
+        <div class="who">
+          <div class="av">RL</div>
+          <div><div class="nm">RaceLab Performance</div><div class="rl">Plan Pro · Demo</div></div>
+        </div>
+        <div class="reset" id="reset-data">↻ Reiniciar datos demo</div>
+        <a href="index.html" class="back">← Volver a la landing</a>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+      <div class="mobile-bar">
+        <a href="index.html" class="brand"><span class="mark"></span>SLIP<span>STREAM</span></a>
+        <select id="mobile-view">
+          <option value="dashboard">Dashboard</option>
+          <option value="pipeline">Pipeline</option>
+          <option value="clientes">Clientes</option>
+          <option value="automatizacion">Automatización</option>
+        </select>
+      </div>
+      <div class="topbar">
+        <h1 id="view-title">Dashboard</h1>
+        <div class="tools">
+          <input class="search" id="search" type="search" placeholder="Buscar cliente o coche…" />
+          <button class="btn btn-primary btn-sm" id="new-lead-btn">+ Nuevo lead</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="kpis" id="kpis"></div>
+        <div class="panel-row">
+          <div class="panel">
+            <h3>Distribución del pipeline</h3>
+            <div id="pipeline-bars"></div>
+          </div>
+          <div class="panel">
+            <h3>Actividad reciente</h3>
+            <div id="feed"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PIPELINE -->
+      <section class="view" id="view-pipeline" hidden>
+        <div class="board" id="board"></div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section class="view" id="view-clientes" hidden>
+        <table class="table">
+          <thead><tr><th>Cliente</th><th>Vehículo</th><th>Servicio</th><th>Estado</th><th>Valor</th><th>Origen</th></tr></thead>
+          <tbody id="client-rows"></tbody>
+        </table>
+      </section>
+
+      <!-- AUTOMATIZACIÓN -->
+      <section class="view" id="view-automatizacion" hidden>
+        <div class="panel" style="max-width:760px;margin:0 auto;">
+          <h3>Flujo de automatización activo</h3>
+          <p style="color:var(--c-text-soft);font-size:0.92rem;margin-bottom:24px;">Cada vez que un cliente envía el formulario de la web, este flujo se ejecuta automáticamente. Pulsa el botón para simularlo.</p>
+          <div class="auto-steps" id="auto-steps-app">
+            <div class="auto-step" data-step="0"><div class="si">📝</div><div><div class="st">Formulario web</div><div class="sd">Captura de datos del cliente</div></div><span class="check">✓</span></div>
+            <div class="auto-step" data-step="1"><div class="si">🔗</div><div><div class="st">Webhook</div><div class="sd">Envío seguro al servidor</div></div><span class="check">✓</span></div>
+            <div class="auto-step" data-step="2"><div class="si">⚙️</div><div><div class="st">n8n · motor de automatización</div><div class="sd">Clasifica por servicio, valor y prioridad</div></div><span class="check">✓</span></div>
+            <div class="auto-step" data-step="3"><div class="si">🗂️</div><div><div class="st">CRM</div><div class="sd">Lead creado en "Nuevo Lead"</div></div><span class="check">✓</span></div>
+            <div class="auto-step" data-step="4"><div class="si">🔔</div><div><div class="st">Notificación</div><div class="sd">WhatsApp + email al taller</div></div><span class="check">✓</span></div>
+          </div>
+          <button class="btn btn-primary btn-lg" id="sim-auto" style="margin-top:24px;width:100%;">▶ Simular entrada de lead</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== DRAWER DETALLE ===== -->
+  <div class="drawer-bg" id="drawer-bg"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head">
+      <div><h2 id="d-name"></h2><div class="veh" id="d-veh"></div></div>
+      <span class="x" id="d-close">✕</span>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/crm.js"></script>
+</body>
+</html>

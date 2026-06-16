@@ -1,0 +1,79 @@
+/* ============================================
+   SLIPSTREAM · Design Tokens
+   Sistema de diseño motorsport premium
+   ============================================ */
+
+:root {
+  /* --- Color · base oscura --- */
+  --c-black:        #0a0b0d;
+  --c-bg:           #0d0f12;
+  --c-surface:      #14171c;
+  --c-surface-2:    #1b1f26;
+  --c-surface-3:    #232830;
+  --c-border:       #2a2f38;
+  --c-border-soft:  #20242b;
+
+  /* --- Color · texto --- */
+  --c-text:         #f4f6f8;
+  --c-text-soft:    #aeb4bd;
+  --c-text-dim:     #6b7280;
+
+  /* --- Color · acento motorsport --- */
+  --c-red:          #e10600;
+  --c-red-bright:   #ff1e15;
+  --c-red-dark:     #b00500;
+  --c-red-glow:     rgba(225, 6, 0, 0.35);
+
+  /* --- Color · estados CRM --- */
+  --c-new:          #3b82f6;
+  --c-contacted:    #8b5cf6;
+  --c-quote:        #f59e0b;
+  --c-pending:      #eab308;
+  --c-confirmed:    #10b981;
+  --c-done:         #64748b;
+
+  /* --- Tipografía --- */
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono:    "JetBrains Mono", "SF Mono", monospace;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold:600;
+  --fw-bold:    700;
+  --fw-black:   800;
+
+  /* --- Espaciado --- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10:128px;
+
+  /* --- Radios --- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-full: 999px;
+
+  /* --- Sombras --- */
+  --sh-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --sh-md: 0 8px 24px rgba(0,0,0,0.45);
+  --sh-lg: 0 24px 60px rgba(0,0,0,0.55);
+  --sh-red: 0 8px 30px var(--c-red-glow);
+
+  /* --- Layout --- */
+  --maxw: 1200px;
+  --nav-h: 72px;
+
+  /* --- Transiciones --- */
+  --t-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-med:  240ms cubic-bezier(0.4, 0, 0.2, 1);
+  --t-slow: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
