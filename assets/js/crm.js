@@ -168,7 +168,7 @@
         <div class="d-grid">
           <div class="d-field"><div class="k">Teléfono</div><div class="v">${l.phone}</div></div>
           <div class="d-field"><div class="k">Servicio</div><div class="v">${l.service}</div></div>
-          <div class="d-field"><div class="k">Valor estimado</div><div class="v">${l.value ? eur(l.value) : '—'}</div></div>
+          <div class="d-field"><div class="k">Valor estimado</div><div class="v d-value-wrap"><span id="d-value-display">${l.value ? eur(l.value) : '—'}</span><input id="d-value-input" type="number" min="0" placeholder="0" value="${l.value || ''}" style="display:none;width:90px;padding:2px 6px;border:1px solid var(--c-border);border-radius:4px;background:var(--c-surface2);color:var(--c-text);font-size:0.9rem" /><button id="d-value-btn" class="btn btn-ghost btn-sm" style="margin-left:6px;font-size:0.75rem">✏️</button></div></div>
           <div class="d-field"><div class="k">Origen</div><div class="v">${l.source}</div></div>
           <div class="d-field"><div class="k">Temperatura</div><div class="v">${(S.TEMPS[l.temperature] || S.TEMPS.frio).ic} ${(S.TEMPS[l.temperature] || S.TEMPS.frio).label}</div></div>
           <div class="d-field"><div class="k">Prioridad</div><div class="v" style="text-transform:capitalize">${l.priority || '—'}</div></div>
@@ -189,6 +189,25 @@
           <button class="btn btn-primary btn-sm" id="d-note-add">Añadir</button>
         </div>
       </div>`;
+
+    $('#d-value-btn').addEventListener('click', () => {
+      const display = $('#d-value-display');
+      const input = $('#d-value-input');
+      const btn = $('#d-value-btn');
+      if (input.style.display === 'none') {
+        display.style.display = 'none';
+        input.style.display = 'inline-block';
+        input.focus();
+        btn.textContent = '✓';
+      } else {
+        const v = parseInt(input.value, 10) || 0;
+        S.update(id, { value: v });
+        addNote(id, `Valor estimado actualizado a ${eur(v)}.`);
+        refreshCurrent();
+        openDrawer(id);
+      }
+    });
+    $('#d-value-input').addEventListener('keydown', e => { if (e.key === 'Enter') $('#d-value-btn').click(); });
 
     $('#d-stage').addEventListener('change', e => {
       S.setStage(id, e.target.value);
