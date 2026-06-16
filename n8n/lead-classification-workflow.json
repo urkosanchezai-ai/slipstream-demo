@@ -9,18 +9,24 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "id": "0fa54d4a-a812-4889-9153-509e0a965dd9",
       "name": "Webhook",
       "webhookId": "597ee69b-4c34-4f09-8073-07a89b752249"
     },
     {
       "parameters": {
-        "jsCode": "const body = $json.body || $json || {};\n\n// =========================\n// SOPORTE DOBLE FORMATO\n// - Si el body trae \"data.fields\" (formularios tipo Tally)\n// - Si el body es plano (nuestra landing: name, phone, vehicle, service, detail...)\n// =========================\nconst fields = body?.data?.fields;\n\nconst getField = (label) =>\n  (fields || []).find(f => (f.label || '').toLowerCase().includes(label.toLowerCase()));\nconst getText = (label) => getField(label)?.value ?? null;\nconst getDropdownText = (field) => {\n  if (!field?.value?.length) return null;\n  const selected = field.options?.find(o => o.id === field.value[0]);\n  return selected?.text || null;\n};\nconst getCheckboxValues = (field) => {\n  if (!field) return [];\n  if (Array.isArray(field.value)) {\n    return (field.options || []).filter(o => field.value.includes(o.id)).map(o => o.text);\n  }\n  if (typeof field.value === 'boolean' && field.value === true) {\n    const match = (field.label || '').match(/\\((.*?)\\)/);\n    return match ? [match[1]] : [];\n  }\n  return [];\n};\n\nlet nombre, telefono, instagram, vehiculo, servicio, mensaje, taller, pais;\n\nif (Array.isArray(fields)) {\n  nombre = getText('Nombre completo');\n  telefono = getText('Numero de telefono');\n  instagram = getText('Instagram');\n  vehiculo = getText('Que coche tienes');\n  pais = getText('De donde eres');\n  mensaje = getText('importante');\n  servicio = getCheckboxValues(getField('Que te gustaria hacer')).join(', ');\n  taller = '';\n} else {\n  nombre = body.name || 'Cliente demo';\n  telefono = body.phone || '';\n  instagram = body.instagram || '';\n  vehiculo = body.vehicle || '—';\n  servicio = body.service || 'Consulta';\n  mensaje = body.detail || body.message || '';\n  taller = body.shop || '';\n  pais = body.pais || body.location || '';\n}\n\n// =========================\n// SCORE 0-100\n// =========================\nlet score = 0;\n\n// 🔧 SERVICIO (max 35)\nconst hot = ['Swap', 'Electrónica', 'Competición'];\nconst mid = ['Preparación', 'Escape', 'Reprogramación'];\nif (hot.some(s => servicio.includes(s))) score += 35;\nelse if (mid.some(s => servicio.includes(s))) score += 20;\nelse score += 8;\n\n// 📱 TELÉFONO VÁLIDO (max 20)\nconst digits = (telefono || '').replace(/\\D/g, '');\nscore += digits.length >= 9 ? 20 : 5;\n\n// ⏱️ URGENCIA / PALABRAS CLAVE EN EL MENSAJE (max 25)\nconst msg = (mensaje || '').toLowerCase();\nconst urgentWords = ['presupuesto', 'precio', 'cuanto', 'cuánto', 'fecha', 'urgente'];\nscore += urgentWords.some(w => msg.includes(w)) ? 25 : 10;\n\n// 🧠 CLARIDAD DEL MENSAJE (max 20)\nconst wordCount = msg.split(/\\s+/).filter(Boolean).length;\nif (wordCount > 15) score += 20;\nelse if (wordCount >= 5) score += 12;\nelse score += 4;\n\nconst normalizedScore = Math.min(100, Math.round(score));\n\n// =========================\n// TEMPERATURA Y PRIORIDAD\n// =========================\nlet leadType = '🧊 FRÍO';\nif (normalizedScore >= 70) leadType = '🔥 CALIENTE';\nelse if (normalizedScore >= 40) leadType = '🌤️ TEMPLADO';\n\nlet priority = normalizedScore >= 70\n  ? '🔥 CONTACTAR YA (<2H)'\n  : normalizedScore >= 40\n  ? '🌤️ CONTACTAR EN 24H'\n  : '🧊 SEGUIMIENTO AUTOMÁTICO';\n\nconst whatsappDigits = (telefono || '').replace(/\\D/g, '');\nconst whatsapp_link = normalizedScore >= 70 && whatsappDigits ? `https://wa.me/${whatsappDigits}` : '';\n\nreturn [{\n  json: {\n    nombre, telefono, instagram, vehiculo, servicio, mensaje, taller, pais,\n    score: normalizedScore,\n    leadType,\n    priority,\n    whatsapp_link,\n    estado: 'Nuevo',\n    fecha: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),\n    raw: body,\n  }\n}];"
+        "jsCode": "// =========================\n// ⚙️ CONFIGURACIÃN — edita solo esto\n// =========================\nconst SHOP_EMAIL = 'taller@ejemplo.com'; // ← pon aquí el email del taller\n\nconst body = $json.body || $json || {};\n\n// =========================\n// SOPORTE DOBLE FORMATO\n// - Si el body trae \"data.fields\" (formularios tipo Tally)\n// - Si el body es plano (nuestra landing: name, phone, vehicle, service, detail...)\n// =========================\nconst fields = body?.data?.fields;\n\nconst getField = (label) =>\n  (fields || []).find(f => (f.label || '').toLowerCase().includes(label.toLowerCase()));\nconst getText = (label) => getField(label)?.value ?? null;\nconst getDropdownText = (field) => {\n  if (!field?.value?.length) return null;\n  const selected = field.options?.find(o => o.id === field.value[0]);\n  return selected?.text || null;\n};\nconst getCheckboxValues = (field) => {\n  if (!field) return [];\n  if (Array.isArray(field.value)) {\n    return (field.options || []).filter(o => field.value.includes(o.id)).map(o => o.text);\n  }\n  if (typeof field.value === 'boolean' && field.value === true) {\n    const match = (field.label || '').match(/\\((.*?)\\)/);\n    return match ? [match[1]] : [];\n  }\n  return [];\n};\n\nlet nombre, telefono, instagram, vehiculo, servicio, mensaje, taller, pais;\n\nif (Array.isArray(fields)) {\n  nombre = getText('Nombre completo');\n  telefono = getText('Numero de telefono');\n  instagram = getText('Instagram');\n  vehiculo = getText('Que coche tienes');\n  pais = getText('De donde eres');\n  mensaje = getText('importante');\n  servicio = getCheckboxValues(getField('Que te gustaria hacer')).join(', ');\n  taller = '';\n} else {\n  nombre = body.name || 'Cliente demo';\n  telefono = body.phone || '';\n  instagram = body.instagram || '';\n  vehiculo = body.vehicle || '—';\n  servicio = body.service || 'Consulta';\n  mensaje = body.detail || body.message || '';\n  taller = body.shop || '';\n  pais = body.pais || body.location || '';\n}\n\n// =========================\n// SCORE 0-100\n// =========================\nlet score = 0;\n\n// 🔧 SERVICIO (max 35)\nconst hot = ['Swap', 'Electrónica', 'Competición'];\nconst mid = ['Preparación', 'Escape', 'Reprogramación'];\nif (hot.some(s => servicio.includes(s))) score += 35;\nelse if (mid.some(s => servicio.includes(s))) score += 20;\nelse score += 8;\n\n// 📱 TELÉFONO VÁLIDO (max 20)\nconst digits = (telefono || '').replace(/\\D/g, '');\nscore += digits.length >= 9 ? 20 : 5;\n\n// ⏱️ URGENCIA / PALABRAS CLAVE EN EL MENSAJE (max 25)\nconst msg = (mensaje || '').toLowerCase();\nconst urgentWords = ['presupuesto', 'precio', 'cuanto', 'cuánto', 'fecha', 'urgente'];\nscore += urgentWords.some(w => msg.includes(w)) ? 25 : 10;\n\n// 🧠 CLARIDAD DEL MENSAJE (max 20)\nconst wordCount = msg.split(/\\s+/).filter(Boolean).length;\nif (wordCount > 15) score += 20;\nelse if (wordCount >= 5) score += 12;\nelse score += 4;\n\nconst normalizedScore = Math.min(100, Math.round(score));\n\n// =========================\n// TEMPERATURA Y PRIORIDAD\n// =========================\nlet leadType = '🧊 FRÍO';\nif (normalizedScore >= 70) leadType = '🔥 CALIENTE';\nelse if (normalizedScore >= 40) leadType = '🌤️ TEMPLADO';\n\nlet priority = normalizedScore >= 70\n  ? '🔥 CONTACTAR YA (<2H)'\n  : normalizedScore >= 40\n  ? '🌤️ CONTACTAR EN 24H'\n  : '🧊 SEGUIMIENTO AUTOMÁTICO';\n\nconst whatsappDigits = (telefono || '').replace(/\\D/g, '');\nconst whatsapp_link = normalizedScore >= 70 && whatsappDigits ? `https://wa.me/${whatsappDigits}` : '';\n\nreturn [{\n  json: {\n    nombre, telefono, instagram, vehiculo, servicio, mensaje, taller, pais,\n    score: normalizedScore,\n    leadType,\n    priority,\n    whatsapp_link,\n    shopEmail: SHOP_EMAIL,\n    estado: 'Nuevo',\n    fecha: new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }),\n    raw: body,\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [320, 0],
+      "position": [
+        320,
+        0
+      ],
       "id": "e181cf13-efd5-4c4a-99e8-327d702369d5",
       "name": "Clasificar lead"
     },
@@ -63,7 +69,10 @@
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [600, 0],
+      "position": [
+        600,
+        0
+      ],
       "id": "b10d4ce5-27ec-42ca-b44c-86b6fda9eb81",
       "name": "Guardar en Sheets (CRM)",
       "credentials": {
@@ -79,9 +88,20 @@
           "values": [
             {
               "conditions": {
-                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
                 "conditions": [
-                  { "leftValue": "={{ $json.leadType }}", "rightValue": "🔥 CALIENTE", "operator": { "type": "string", "operation": "equals" } }
+                  {
+                    "leftValue": "={{ $json.leadType }}",
+                    "rightValue": "🔥 CALIENTE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
                 ],
                 "combinator": "and"
               },
@@ -90,9 +110,20 @@
             },
             {
               "conditions": {
-                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
                 "conditions": [
-                  { "leftValue": "={{ $json.leadType }}", "rightValue": "🌤️ TEMPLADO", "operator": { "type": "string", "operation": "equals" } }
+                  {
+                    "leftValue": "={{ $json.leadType }}",
+                    "rightValue": "🌤️ TEMPLADO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
                 ],
                 "combinator": "and"
               },
@@ -101,11 +132,17 @@
             }
           ]
         },
-        "options": { "fallbackOutput": "extra", "renameFallbackOutput": "frio" }
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "frio"
+        }
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [880, 0],
+      "position": [
+        880,
+        0
+      ],
       "id": "a1b2c3d4-switch-temp-0001",
       "name": "Switch · Temperatura"
     },
@@ -113,14 +150,17 @@
       "parameters": {
         "resource": "message",
         "operation": "send",
-        "sendTo": "={{ $env.SHOP_EMAIL }}",
+        "sendTo": "={{ $('Clasificar lead').item.json.shopEmail }}",
         "subject": "🔥 LEAD CALIENTE: {{ $json.nombre }} — {{ $json.vehiculo }}",
         "message": "<h2>Nuevo lead CALIENTE 🔥</h2><p><b>Nombre:</b> {{ $json.nombre }}<br><b>Teléfono:</b> {{ $json.telefono }}<br><b>Instagram:</b> {{ $json.instagram }}<br><b>Vehículo:</b> {{ $json.vehiculo }}<br><b>Servicio:</b> {{ $json.servicio }}<br><b>Mensaje:</b> {{ $json.mensaje }}<br><b>Score:</b> {{ $json.score }}/100<br><b>Prioridad:</b> {{ $json.priority }}</p>{{ $json.whatsapp_link ? '<p><a href=\"' + $json.whatsapp_link + '\">Abrir WhatsApp</a></p>' : '' }}<p>Responde cuanto antes — este cliente está listo para cerrar.</p>",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [1160, -180],
+      "position": [
+        1160,
+        -180
+      ],
       "id": "f1e2d3c4-gmail-hot-0001",
       "name": "Gmail al taller · Caliente",
       "credentials": {
@@ -134,14 +174,17 @@
       "parameters": {
         "resource": "message",
         "operation": "send",
-        "sendTo": "={{ $env.SHOP_EMAIL }}",
+        "sendTo": "={{ $('Clasificar lead').item.json.shopEmail }}",
         "subject": "🌤️ Nuevo lead templado: {{ $json.nombre }} — {{ $json.vehiculo }}",
         "message": "<h2>Nuevo lead templado 🌤️</h2><p><b>Nombre:</b> {{ $json.nombre }}<br><b>Teléfono:</b> {{ $json.telefono }}<br><b>Vehículo:</b> {{ $json.vehiculo }}<br><b>Servicio:</b> {{ $json.servicio }}<br><b>Mensaje:</b> {{ $json.mensaje }}<br><b>Score:</b> {{ $json.score }}/100</p><p>Vale la pena hacer seguimiento en las próximas 24h.</p>",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [1160, 0],
+      "position": [
+        1160,
+        0
+      ],
       "id": "f1e2d3c4-gmail-mid-0002",
       "name": "Gmail al taller · Templado",
       "credentials": {
@@ -155,14 +198,17 @@
       "parameters": {
         "resource": "message",
         "operation": "send",
-        "sendTo": "={{ $env.SHOP_EMAIL }}",
+        "sendTo": "={{ $('Clasificar lead').item.json.shopEmail }}",
         "subject": "🧊 Lead frío registrado: {{ $json.nombre }}",
         "message": "<p>Lead de baja prioridad guardado en el CRM. No requiere acción inmediata.</p><p><b>Nombre:</b> {{ $json.nombre }} · <b>Vehículo:</b> {{ $json.vehiculo }} · <b>Servicio:</b> {{ $json.servicio }}</p>",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [1160, 180],
+      "position": [
+        1160,
+        180
+      ],
       "id": "f1e2d3c4-gmail-cold-0003",
       "name": "Gmail al taller · Frío",
       "credentials": {
@@ -175,20 +221,72 @@
   ],
   "pinData": {},
   "connections": {
-    "Webhook": { "main": [[{ "node": "Clasificar lead", "type": "main", "index": 0 }]] },
-    "Clasificar lead": { "main": [[{ "node": "Guardar en Sheets (CRM)", "type": "main", "index": 0 }]] },
-    "Guardar en Sheets (CRM)": { "main": [[{ "node": "Switch · Temperatura", "type": "main", "index": 0 }]] },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clasificar lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificar lead": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Sheets (CRM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Sheets (CRM)": {
+      "main": [
+        [
+          {
+            "node": "Switch · Temperatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Switch · Temperatura": {
       "main": [
-        [{ "node": "Gmail al taller · Caliente", "type": "main", "index": 0 }],
-        [{ "node": "Gmail al taller · Templado", "type": "main", "index": 0 }],
-        [{ "node": "Gmail al taller · Frío", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Gmail al taller · Caliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail al taller · Templado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail al taller · Frío",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "meta": { "templateCredsSetupCompleted": false },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
   "id": "WqtyqVOWBMmbyQVy",
   "tags": []
 }
