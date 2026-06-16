@@ -78,6 +78,7 @@
       const fd = new FormData(form);
       const payload = {
         name:    fd.get('name')    || 'Cliente demo',
+        email:   fd.get('email')   || '',
         phone:   fd.get('phone')   || '—',
         shop:    fd.get('shop')    || '',
         vehicle: fd.get('vehicle') || '—',
