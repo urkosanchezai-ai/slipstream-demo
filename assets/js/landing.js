@@ -6,7 +6,11 @@
 
   /* --- Nav scroll state --- */
   const nav = document.getElementById('nav');
-  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 20);
+  const scrollHint = document.querySelector('.scroll-hint');
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    if (scrollHint) scrollHint.classList.toggle('hide', window.scrollY > 80);
+  };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
