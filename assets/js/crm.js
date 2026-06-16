@@ -67,8 +67,9 @@
 
   /* ---------- Card HTML ---------- */
   function cardHTML(l) {
+    const temp = S.TEMPS[l.temperature] || S.TEMPS.frio;
     return `<div class="card prio-${l.priority || 'baja'}" draggable="true" data-id="${l.id}">
-      <div class="c-top"><span class="c-name">${l.name}</span>${l.value ? `<span class="c-val">${eur(l.value)}</span>` : ''}</div>
+      <div class="c-top"><span class="c-name">${temp.ic} ${l.name}</span>${l.value ? `<span class="c-val">${eur(l.value)}</span>` : ''}</div>
       <div class="c-veh">${l.vehicle}</div>
       <div class="c-foot"><span class="c-serv">${l.service}</span><span class="c-src">${l.source}</span></div>
     </div>`;
@@ -129,10 +130,12 @@
     const leads = filtered(S.all());
     $('#client-rows').innerHTML = leads.map(l => {
       const st = stageOf(l.stage);
+      const temp = S.TEMPS[l.temperature] || S.TEMPS.frio;
       return `<tr data-id="${l.id}">
         <td><strong>${l.name}</strong><br><span style="color:var(--c-text-dim);font-size:0.8rem">${l.phone}</span></td>
         <td>${l.vehicle}</td>
         <td>${l.service}</td>
+        <td>${temp.ic} ${temp.label}</td>
         <td><span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}</span></td>
         <td>${l.value ? eur(l.value) : '—'}</td>
         <td>${l.source}</td>
@@ -167,6 +170,7 @@
           <div class="d-field"><div class="k">Servicio</div><div class="v">${l.service}</div></div>
           <div class="d-field"><div class="k">Valor estimado</div><div class="v">${l.value ? eur(l.value) : '—'}</div></div>
           <div class="d-field"><div class="k">Origen</div><div class="v">${l.source}</div></div>
+          <div class="d-field"><div class="k">Temperatura</div><div class="v">${(S.TEMPS[l.temperature] || S.TEMPS.frio).ic} ${(S.TEMPS[l.temperature] || S.TEMPS.frio).label}</div></div>
           <div class="d-field"><div class="k">Prioridad</div><div class="v" style="text-transform:capitalize">${l.priority || '—'}</div></div>
           <div class="d-field"><div class="k">Fecha entrada</div><div class="v">${l.date}</div></div>
         </div>
@@ -266,6 +270,7 @@
   // Si venimos de la landing con un lead recién creado, avisamos.
   const last = S.all()[0];
   if (last && last.source === 'Web' && last.notes?.[0]?.x?.includes('demo en vivo')) {
-    setTimeout(() => toast({ icon: '🎉', title: '¡Tu lead llegó!', text: `${last.name} ya está en "Nuevo Lead".` }), 600);
+    const t = S.TEMPS[last.temperature] || S.TEMPS.frio;
+    setTimeout(() => toast({ icon: '🎉', title: '¡Tu lead llegó!', text: `${last.name} entró clasificado como ${t.ic} ${t.label}.` }), 600);
   }
 })();

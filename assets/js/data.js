@@ -16,6 +16,39 @@ window.Slipstream = (function () {
     { id: 'done',      label: 'Finalizado',        color: 'var(--c-done)' },
   ];
 
+  // Misma lógica de puntuación que el nodo Code de n8n,
+  // para que la demo refleje la clasificación real del lead.
+  const TEMPS = {
+    caliente: { ic: '🔥', label: 'Caliente' },
+    templado: { ic: '🌤️', label: 'Templado' },
+    frio:     { ic: '🧊', label: 'Frío' },
+  };
+
+  function calcTemperature(lead) {
+    let score = 0;
+    const service = lead.service || '';
+    const hot = ['Swap', 'Electrónica', 'Competición'];
+    const mid = ['Preparación', 'Escape', 'Reprogramación'];
+    if (hot.some(s => service.includes(s))) score += 4;
+    else if (mid.some(s => service.includes(s))) score += 2;
+    else score += 1;
+
+    const digits = (lead.phone || '').replace(/\D/g, '');
+    if (digits.length >= 9) score += 2;
+
+    const msg = (lead.detail || '').toLowerCase();
+    const urgentWords = ['presupuesto', 'precio', 'cuanto', 'cuánto', 'fecha', 'urgente'];
+    if (urgentWords.some(w => msg.includes(w))) score += 2;
+
+    const wordCount = msg.split(/\s+/).filter(Boolean).length;
+    if (wordCount > 15) score += 1;
+    if (wordCount > 0 && wordCount < 5) score -= 2;
+
+    if (score >= 6) return 'caliente';
+    if (score >= 3) return 'templado';
+    return 'frio';
+  }
+
   const SEED = [
     { id: 'l1', name: 'Iván Soler', shop: '', vehicle: 'Honda Civic Type R FK8', phone: '611 204 887', service: 'Preparación Performance', detail: 'Stage 2 + admisión + downpipe. Busca ~360 cv fiables para uso mixto calle/track.', value: 2400, stage: 'new', source: 'Instagram', date: '2026-06-15', priority: 'alta', notes: [
         { t: '2026-06-15 09:12', x: 'Lead entrado vía formulario web.' } ] },
@@ -39,13 +72,19 @@ window.Slipstream = (function () {
         { t: '2026-06-14 13:20', x: 'Lead entrado.' }, { t: '2026-06-15 10:00', x: 'Contactada por WhatsApp, esperando datos del coche.' } ] },
   ];
 
+  function withTemperature(leads) {
+    leads.forEach(l => { if (!l.temperature) l.temperature = calcTemperature(l); });
+    return leads;
+  }
+
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) return withTemperature(JSON.parse(raw));
     } catch (e) {}
-    localStorage.setItem(KEY, JSON.stringify(SEED));
-    return JSON.parse(JSON.stringify(SEED));
+    const seeded = withTemperature(JSON.parse(JSON.stringify(SEED)));
+    localStorage.setItem(KEY, JSON.stringify(seeded));
+    return seeded;
   }
 
   function save(leads) { localStorage.setItem(KEY, JSON.stringify(leads)); }
@@ -63,6 +102,7 @@ window.Slipstream = (function () {
       priority: 'alta',
       notes: [{ t: now.toISOString().slice(0,16).replace('T',' '), x: 'Lead entrado vía formulario web (demo en vivo).' }],
     }, lead);
+    full.temperature = calcTemperature(full);
     leads.unshift(full);
     save(leads);
     return full;
@@ -78,5 +118,5 @@ window.Slipstream = (function () {
 
   function reset() { localStorage.removeItem(KEY); return load(); }
 
-  return { STAGES, all, add, update, setStage, reset };
+  return { STAGES, TEMPS, all, add, update, setStage, reset };
 })();
