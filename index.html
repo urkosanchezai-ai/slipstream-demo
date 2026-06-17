@@ -22,7 +22,7 @@
         <a href="#contacto">Contacto</a>
       </nav>
       <div class="nav-cta">
-        <a href="tel:+34600000000" class="btn btn-ghost">📞 631 00 00 00</a>
+        <a href="tel:+34600000000" class="btn btn-ghost btn-tel"><span>631 00 00 00</span></a>
         <a href="#contacto" class="btn btn-primary">Pedir presupuesto</a>
         <button class="nav-toggle" aria-label="Menú">☰</button>
       </div>
@@ -72,15 +72,15 @@
         <p>Un proceso claro para que sepas en todo momento dónde está tu proyecto.</p>
       </div>
       <div class="flow">
-        <div class="flow-step reveal"><div class="n">01</div><div class="ic">📝</div><h4>Solicitud</h4><p>Cuéntanos tu coche y tu objetivo.</p></div>
+        <div class="flow-step reveal"><div class="n">01</div><div class="ic" data-icon="clipboard"></div><h4>Solicitud</h4><p>Cuéntanos tu coche y tu objetivo.</p></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step reveal"><div class="n">02</div><div class="ic">📞</div><h4>Asesoramiento</h4><p>Te llamamos y definimos el proyecto.</p></div>
+        <div class="flow-step reveal"><div class="n">02</div><div class="ic" data-icon="phone"></div><h4>Asesoramiento</h4><p>Te llamamos y definimos el proyecto.</p></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step reveal"><div class="n">03</div><div class="ic">📄</div><h4>Presupuesto</h4><p>Propuesta detallada y cerrada.</p></div>
+        <div class="flow-step reveal"><div class="n">03</div><div class="ic" data-icon="file"></div><h4>Presupuesto</h4><p>Propuesta detallada y cerrada.</p></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step reveal"><div class="n">04</div><div class="ic">🔧</div><h4>Ejecución</h4><p>Trabajo en boxes con seguimiento.</p></div>
+        <div class="flow-step reveal"><div class="n">04</div><div class="ic" data-icon="wrench"></div><h4>Ejecución</h4><p>Trabajo en boxes con seguimiento.</p></div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step reveal"><div class="n">05</div><div class="ic">🏁</div><h4>Entrega</h4><p>Tu coche, listo para rodar.</p></div>
+        <div class="flow-step reveal"><div class="n">05</div><div class="ic" data-icon="checkered"></div><h4>Entrega</h4><p>Tu coche, listo para rodar.</p></div>
       </div>
     </div>
   </section>
@@ -118,9 +118,9 @@
           <h2>Cuéntanos qué tienes en mente</h2>
           <p>Rellena el formulario con los datos de tu coche y lo que buscas. Te respondemos en menos de 24 h con un primer asesoramiento sin compromiso.</p>
           <ul class="cta-list">
-            <li><span class="chk">✓</span> Respuesta en menos de 24 h</li>
-            <li><span class="chk">✓</span> Asesoramiento sin compromiso</li>
-            <li><span class="chk">✓</span> Presupuesto cerrado y detallado</li>
+            <li><span class="chk" data-icon="check"></span> Respuesta en menos de 24 h</li>
+            <li><span class="chk" data-icon="check"></span> Asesoramiento sin compromiso</li>
+            <li><span class="chk" data-icon="check"></span> Presupuesto cerrado y detallado</li>
           </ul>
         </div>
         <div class="form-card reveal">
@@ -149,7 +149,7 @@
             </div>
             <div class="field"><label>Cuéntanos tu proyecto</label><textarea name="message" rows="2" placeholder="Objetivo de potencia, uso del coche, piezas que ya tengas…"></textarea></div>
             <button type="submit" class="btn btn-primary btn-lg">Enviar solicitud →</button>
-            <p class="form-note">🔒 Tus datos solo se usan para contactar contigo.</p>
+            <p class="form-note"><span data-icon="lock"></span> Tus datos solo se usan para contactar contigo.</p>
           </form>
         </div>
       </div>
@@ -180,12 +180,12 @@
   <!-- ===== CONFIRMACIÓN (cliente) ===== -->
   <div class="auto-overlay" id="auto-overlay">
     <div class="auto-card">
-      <h3>¡Solicitud enviada! ✅</h3>
+      <h3>Solicitud enviada</h3>
       <p id="cfg-confirm-text">Gracias por confiar en RaceLab. Hemos recibido los datos de tu proyecto y te contactaremos en menos de 24 horas.</p>
       <div class="auto-steps">
-        <div class="auto-step" data-step="0"><div class="si">📝</div><div><div class="st">Solicitud recibida</div><div class="sd">Tus datos están a salvo</div></div><span class="check">✓</span></div>
-        <div class="auto-step" data-step="1"><div class="si">🗂️</div><div><div class="st">Registrada en el taller</div><div class="sd">Ya estás en nuestra cola de proyectos</div></div><span class="check">✓</span></div>
-        <div class="auto-step" data-step="2"><div class="si">📞</div><div><div class="st">Te llamaremos pronto</div><div class="sd">Asesoramiento sin compromiso</div></div><span class="check">✓</span></div>
+        <div class="auto-step" data-step="0"><div class="si" data-icon="check"></div><div><div class="st">Solicitud recibida</div><div class="sd">Tus datos están a salvo</div></div><span class="check" data-icon="check"></span></div>
+        <div class="auto-step" data-step="1"><div class="si" data-icon="inbox"></div><div><div class="st">Registrada en el taller</div><div class="sd">Ya estás en nuestra cola de proyectos</div></div><span class="check" data-icon="check"></span></div>
+        <div class="auto-step" data-step="2"><div class="si" data-icon="phone"></div><div><div class="st">Te llamaremos pronto</div><div class="sd">Asesoramiento sin compromiso</div></div><span class="check" data-icon="check"></span></div>
       </div>
       <div class="auto-actions">
         <button class="btn btn-primary" id="auto-close">Perfecto</button>
@@ -196,6 +196,7 @@
   <div class="toast-wrap" id="toast-wrap"></div>
 
   <script src="assets/js/config.js"></script>
+  <script src="assets/js/icons.js"></script>
   <script src="assets/js/brand.js"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/landing.js"></script>

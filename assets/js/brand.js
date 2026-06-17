@@ -34,8 +34,12 @@
   const nm = $('.side-foot .nm'); if (nm) nm.textContent = C.shopName;
   const rl = $('.side-foot .rl'); if (rl) rl.textContent = C.tagline;
 
+  // --- Helper de iconos ---
+  const I = window.Icons || {};
+  const icon = (name) => I[name] || '';
+
   // --- Teléfono ---
-  $$('a[href^="tel:"]').forEach(a => { a.href = 'tel:' + C.phoneHref; a.textContent = '📞 ' + C.phone; });
+  $$('a[href^="tel:"]').forEach(a => { a.href = 'tel:' + C.phoneHref; a.innerHTML = `${icon('phone')}<span>${C.phone}</span>`; });
 
   // --- Hero ---
   const h1 = $('.hero h1');
@@ -57,7 +61,7 @@
   const servicesGrid = $('#cfg-services');
   if (servicesGrid) {
     servicesGrid.innerHTML = C.services.map(s =>
-      `<div class="case reveal in"><div class="ic">${s.ic}</div><h3>${s.title}</h3><p>${s.desc}</p><span class="tag">${s.tag}</span></div>`
+      `<div class="case reveal in"><div class="ic">${icon(s.ic)}</div><h3>${s.title}</h3><p>${s.desc}</p><span class="tag">${s.tag}</span></div>`
     ).join('');
   }
 
@@ -65,7 +69,7 @@
   const whyGrid = $('#cfg-why');
   if (whyGrid) {
     whyGrid.innerHTML = C.whyUs.map(w =>
-      `<div class="benefit reveal in"><div class="ic">${w.ic}</div><div><h3>${w.title}</h3><p>${w.desc}</p></div></div>`
+      `<div class="benefit reveal in"><div class="ic">${icon(w.ic)}</div><div><h3>${w.title}</h3><p>${w.desc}</p></div></div>`
     ).join('');
   }
   const whyEyebrow = $('#cfg-why-eyebrow'); if (whyEyebrow) whyEyebrow.textContent = `Por qué ${C.brandPrefix}${C.brandSuffix}`;
@@ -74,7 +78,10 @@
   const projGrid = $('#cfg-projects');
   if (projGrid) {
     projGrid.innerHTML = C.projects.map(p =>
-      `<div class="case reveal in"><div class="ic">${p.ic}</div><h3>${p.title}</h3><p>${p.desc}</p><span class="tag">${p.tag}</span></div>`
+      `<div class="project reveal in">
+         <div class="project-metric"><span class="m">${p.metric}</span><span class="u">${p.unit}</span></div>
+         <div class="project-body"><h3>${p.title}</h3><p>${p.desc}</p><span class="tag">${p.tag}</span></div>
+       </div>`
     ).join('');
   }
 
@@ -93,4 +100,7 @@
   if (footBot) footBot.innerHTML = `© 2026 ${C.shopName}. ${C.address}.`;
   const footNote = $('#cfg-footer-note');
   if (footNote) footNote.innerHTML = `${C.footerNote} <strong style="color:var(--c-red)">Slipstream</strong> · <a href="app.html" style="color:var(--c-text-dim)">Acceso taller</a>`;
+
+  // --- Rellena cualquier [data-icon] con su SVG ---
+  $$('[data-icon]').forEach(el => { const svg = icon(el.dataset.icon); if (svg) el.innerHTML = svg; });
 })();
