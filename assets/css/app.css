@@ -14,7 +14,22 @@ body.app { background: var(--c-bg); }
 .side-nav a:hover { background: var(--c-surface); color: var(--c-text); }
 .side-nav a.active { background: var(--c-surface-2); color: var(--c-text); }
 .side-nav a.active::before { content: ""; width: 3px; height: 18px; background: var(--c-red); border-radius: var(--r-full); margin-right: -4px; }
-.side-nav .ic { width: 20px; text-align: center; }
+.side-nav .ic { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; color: currentColor; }
+.side-nav .ic svg { width: 19px; height: 19px; }
+.side-nav a.active .ic { color: var(--c-red); }
+/* --- Vista automatización --- */
+.auto-steps { display: flex; flex-direction: column; gap: var(--sp-2); position: relative; }
+.auto-step { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4); border-radius: var(--r-md); background: var(--c-surface-2); border: 1px solid var(--c-border-soft); opacity: 0.5; transition: opacity var(--t-med), border-color var(--t-med), transform var(--t-med); }
+.auto-step.active { opacity: 1; border-color: var(--c-red); transform: translateX(4px); }
+.auto-step.done { opacity: 1; border-color: var(--c-confirmed); }
+.auto-step .si { width: 40px; height: 40px; border-radius: var(--r-md); background: var(--c-surface-3); display: grid; place-items: center; color: var(--c-text-soft); flex-shrink: 0; transition: color var(--t-med), background var(--t-med); }
+.auto-step .si svg { width: 20px; height: 20px; }
+.auto-step.active .si, .auto-step.done .si { color: var(--c-red); }
+.auto-step .st { font-weight: var(--fw-semibold); font-size: 0.95rem; }
+.auto-step .sd { font-size: 0.8rem; color: var(--c-text-dim); }
+.auto-step .check { margin-left: auto; color: var(--c-confirmed); opacity: 0; transition: opacity var(--t-fast); display: inline-flex; }
+.auto-step.done .check { opacity: 1; }
+.auto-step .check svg { width: 18px; height: 18px; }
 .side-foot { border-top: 1px solid var(--c-border-soft); padding-top: var(--sp-4); }
 .side-foot .who { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
 .side-foot .av { width: 34px; height: 34px; border-radius: var(--r-full); background: var(--c-red); display: grid; place-items: center; font-weight: var(--fw-bold); font-size: 0.85rem; }

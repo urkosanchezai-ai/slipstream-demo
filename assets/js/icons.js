@@ -35,5 +35,14 @@ window.Icons = (function () {
     lock:      wrap('<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>'),
     inbox:     wrap('<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1.5 3h5L16 13h5"/>'),
     car:       wrap('<path d="M3 15l1.5-6h15L21 15"/><path d="M3 15h18v3H3z"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/>'),
+
+    // --- CRM ---
+    dashboard: wrap('<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="11" width="8" height="10" rx="1"/><rect x="3" y="14" width="8" height="7" rx="1"/>'),
+    pipeline:  wrap('<rect x="3" y="4" width="5" height="16" rx="1"/><rect x="9.5" y="4" width="5" height="11" rx="1"/><rect x="16" y="4" width="5" height="7" rx="1"/>'),
+    users:     wrap('<circle cx="9" cy="8" r="3"/><path d="M4 20a5 5 0 0 1 10 0"/><path d="M16 6a3 3 0 0 1 0 6"/><path d="M17 14a5 5 0 0 1 3 6"/>'),
+    zap:       wrap('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+    webhook:   wrap('<circle cx="12" cy="8" r="3"/><path d="M10.5 10.7L7 17"/><path d="M13.5 10.7L17 17"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'),
+    bell:      wrap('<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+    cog:       wrap('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'),
   };
 })();
