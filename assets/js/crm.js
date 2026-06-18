@@ -225,6 +225,19 @@
     });
     $('#d-note').addEventListener('keydown', e => { if (e.key === 'Enter') $('#d-note-add').click(); });
 
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-danger btn-sm d-delete-btn';
+    deleteBtn.textContent = 'Eliminar lead';
+    deleteBtn.addEventListener('click', () => {
+      if (confirm(`¿Eliminar a ${l.name}? Esta acción no se puede deshacer.`)) {
+        S.remove(id);
+        closeDrawer();
+        refreshCurrent();
+        toast({ icon: '🗑️', title: 'Lead eliminado', text: `${l.name} ha sido eliminado.` });
+      }
+    });
+    $('#drawer-body').appendChild(deleteBtn);
+
     $('#drawer').classList.add('show');
     $('#drawer-bg').classList.add('show');
   }

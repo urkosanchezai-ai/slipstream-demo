@@ -151,7 +151,12 @@ window.Slipstream = (function () {
 
   function setStage(id, stage) { return update(id, { stage }); }
 
+  function remove(id) {
+    const leads = load().filter(l => l.id !== id);
+    save(leads);
+  }
+
   function reset() { localStorage.removeItem(KEY); return load(); }
 
-  return { STAGES, TEMPS, all, add, update, setStage, reset, syncFromSheets };
+  return { STAGES, TEMPS, all, add, update, setStage, remove, reset, syncFromSheets };
 })();

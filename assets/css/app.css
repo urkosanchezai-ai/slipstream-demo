@@ -146,6 +146,9 @@ body.app { background: var(--c-bg); }
 .toast .tt { font-weight: var(--fw-semibold); font-size: 0.92rem; }
 .toast .tx { font-size: 0.82rem; color: var(--c-text-dim); }
 
+/* --- Drawer delete --- */
+.d-delete-btn { margin-top: var(--sp-6); width: 100%; }
+
 /* --- Responsive --- */
 .mobile-bar { display: none; }
 @media (max-width: 860px) {
